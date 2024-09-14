@@ -1,0 +1,51 @@
+CREATE TABLE Cities (
+    CityID SERIAL PRIMARY KEY,  
+    CityName VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE SagaTypes (
+    TypeID SERIAL PRIMARY KEY,  
+    TypeName VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Sagas (
+    SagaID SERIAL PRIMARY KEY, 
+    Title VARCHAR(50) NOT NULL,  
+    CityID INT NOT NULL,  
+    FOREIGN KEY (CityID) REFERENCES Cities(CityID) ON DELETE CASCADE
+);
+
+-- M:N связь между Sagas и SagaTypes
+CREATE TABLE Saga_SagaType (
+    SagaID INT NOT NULL,  
+    TypeID INT NOT NULL,  
+    PRIMARY KEY (SagaID, TypeID),  
+    FOREIGN KEY (SagaID) REFERENCES Sagas(SagaID) ON DELETE CASCADE,  
+    FOREIGN KEY (TypeID) REFERENCES SagaTypes(TypeID) ON DELETE CASCADE
+);
+
+CREATE TABLE Audiences (
+    AudienceID SERIAL PRIMARY KEY,  
+    AudienceName VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Emotions (
+    EmotionID SERIAL PRIMARY KEY, 
+    EmotionName VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE Saga_Audience (
+    SagaID INT NOT NULL,  
+    AudienceID INT NOT NULL, 
+    PRIMARY KEY (SagaID, AudienceID),  
+    FOREIGN KEY (SagaID) REFERENCES Sagas(SagaID) ON DELETE CASCADE,  
+    FOREIGN KEY (AudienceID) REFERENCES Audiences(AudienceID) ON DELETE CASCADE
+);
+
+CREATE TABLE Saga_Emotion (
+    SagaID INT NOT NULL,  
+    EmotionID INT NOT NULL,  
+    PRIMARY KEY (SagaID, EmotionID),  
+    FOREIGN KEY (SagaID) REFERENCES Sagas(SagaID) ON DELETE CASCADE, 
+    FOREIGN KEY (EmotionID) REFERENCES Emotions(EmotionID) ON DELETE CASCADE
+);
