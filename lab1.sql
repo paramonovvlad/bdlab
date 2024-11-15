@@ -1,53 +1,78 @@
-CREATE TABLE City (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255),
-    population INT,
-    founded_year INT,
-    country VARCHAR(100),
-    area DECIMAL(10, 2)
+-- Таблица для сущности Character
+CREATE TABLE Character (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    age INTEGER,
+    backstory TEXT,
+    alignment VARCHAR(50)
 );
 
-CREATE TABLE Saga (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255),
-    creation_date DATE,
-    genre VARCHAR(100),
-    author VARCHAR(100),
-    popularity INT,
-    duration INT,
-    city_id INT,
-    FOREIGN KEY (city_id) REFERENCES City(id)
-);
-
-CREATE TABLE Audience (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    age_group VARCHAR(50),
-    interest VARCHAR(255),
-    gender VARCHAR(50),
-    income_level VARCHAR(50)
-);
-
+-- Таблица для сущности Emotion
 CREATE TABLE Emotion (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    emotion_type VARCHAR(50),
-    intensity INT,
-    trigger_event VARCHAR(255)
+    id SERIAL PRIMARY KEY,
+    emotion_type VARCHAR(100) NOT NULL,
+    intensity INTEGER,
+    duration INTEGER,
+    is_intense BOOLEAN,
+    trigger TEXT
 );
 
-CREATE TABLE Saga_Audience (
-    saga_id INT,
-    audience_id INT,
-    engagement_level INT,
-    PRIMARY KEY (saga_id, audience_id),
-    FOREIGN KEY (saga_id) REFERENCES Saga(id),
-    FOREIGN KEY (audience_id) REFERENCES Audience(id)
+-- Таблица для сущности Event
+CREATE TABLE Event (
+    id SERIAL PRIMARY KEY,
+    description VARCHAR(100) NOT NULL,
+    location VARCHAR(100),
+    date TIMESTAMP,
+    consequence VARCHAR(50)
 );
 
-CREATE TABLE Saga_Emotion (
-    saga_id INT,
-    emotion_id INT,
-    duration INT,
-    PRIMARY KEY (saga_id, emotion_id),
-    FOREIGN KEY (saga_id) REFERENCES Saga(id),
-    FOREIGN KEY (emotion_id) REFERENCES Emotion(id)
+-- Таблица для сущности Main_Character
+CREATE TABLE Main_Character (
+    id SERIAL PRIMARY KEY,
+    event_id INTEGER REFERENCES Event(id) ON DELETE SET NULL,
+    character_id INTEGER UNIQUE REFERENCES Character(id) ON DELETE CASCADE,
+    role_description VARCHAR(100),
+    special_traits TEXT,
+    story_phase VARCHAR(50),
+    priority_level INTEGER
 );
+
+-- Таблица для связи между Character и Emotion (M:M)
+CREATE TABLE Character_Emotion (
+    character_id INTEGER REFERENCES Character(id) ON DELETE CASCADE,
+    emotion_id INTEGER REFERENCES Emotion(id) ON DELETE CASCADE,
+    timestamp TIMESTAMP,
+    context TEXT,
+    PRIMARY KEY (character_id, emotion_id)
+);
+
+-- Добавление данных в таблицы
+
+-- Добавление персонажей
+INSERT INTO Character (name, age, backstory, alignment)
+VALUES ('Floyd', 35, 'Former engineer facing a difficult decision', 'Neutral'),
+       ('Victor Millson', 40, 'Floyd’s successor with a complex agenda', 'Ambiguous');
+
+-- Добавление эмоций
+INSERT INTO Emotion (emotion_type, intensity, duration, is_intense, trigger)
+VALUES ('Irritation', 4, 30, TRUE, 'Phone call from Victor'),
+       ('Curiosity', 5, 15, FALSE, 'Wondering what Victor wants to discuss'),
+       ('Shame', 3, 20, FALSE, 'Self-reflection on his own actions'),
+       ('Excitement', 6, 25, TRUE, 'Anticipation of Victor\'s reason for calling');
+
+-- Добавление событий
+INSERT INTO Event (description, location, date, consequence)
+VALUES ('Phone call from Victor', 'Floyd\'s home', '2023-05-15 10:00:00', 'Internal conflict'),
+       ('Public Speech', 'Conference Hall', '2023-06-01 14:00:00', 'Influence on public opinion');
+
+-- Добавление главных персонажей
+INSERT INTO Main_Character (event_id, character_id, role_description, special_traits, story_phase, priority_level)
+VALUES (1, 1, 'Protagonist', 'Intelligent and determined', 'Beginning', 1),
+       (2, 2, 'Antagonist', 'Charismatic and manipulative', 'Climax', 2);
+
+-- Добавление связи между персонажами и эмоциями (таблица Character_Emotion)
+INSERT INTO Character_Emotion (character_id, emotion_id, timestamp, context)
+VALUES (1, 1, '2023-05-15 10:01:00', 'Reaction to Victor\'s unexpected call'),
+       (1, 2, '2023-05-15 10:02:00', 'Wondering about Victor\'s motives'),
+       (1, 3, '2023-05-15 10:03:00', 'Self-reflection after conversation'),
+       (1, 4, '2023-05-15 10:05:00', 'Excitement about upcoming developments');
