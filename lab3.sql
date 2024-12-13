@@ -13,3 +13,8 @@ CREATE TRIGGER trigger_update_emotion_type
 BEFORE INSERT ON Emotion
 FOR EACH ROW
 EXECUTE FUNCTION update_emotion_type();
+
+SELECT * FROM Emotion;
+
+INSERT INTO Emotion (intensity) VALUES (4);
+INSERT INTO Emotion (intensity) VALUES (5);
