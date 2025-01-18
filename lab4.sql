@@ -1,3 +1,10 @@
+ssh -p 2222 s409308@helios.cs.ifmo.ru
+psql -h pg -d ucheb
+
+
+
+
+
 SELECT 
     Н_ТИПЫ_ВЕДОМОСТЕЙ.ИД AS Тип_ИД, 
     Н_ВЕДОМОСТИ.ИД AS Ведомость_ИД
